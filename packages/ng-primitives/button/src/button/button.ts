@@ -1,5 +1,6 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, Directive, input } from '@angular/core';
+import { injectElementRef } from 'ng-primitives/internal';
 import { ngpButton, provideButtonState } from './button-state';
 
 @Directive({
@@ -8,6 +9,9 @@ import { ngpButton, provideButtonState } from './button-state';
   providers: [provideButtonState({ inherit: false })],
 })
 export class NgpButton {
+  protected readonly elementRef = injectElementRef();
+  protected element = this.elementRef.nativeElement;
+
   /**
    * Whether the button is disabled.
    */
@@ -16,9 +20,17 @@ export class NgpButton {
   });
 
   /**
+   * The role of the button.
+   */
+  readonly role = input<string | null>(null);
+
+  /**
    * The button state.
    */
-  protected readonly state = ngpButton({ disabled: this.disabled });
+  protected readonly state = ngpButton({
+    disabled: this.disabled,
+    role: this.role,
+  });
 
   /**
    * Set the disabled state of the button.

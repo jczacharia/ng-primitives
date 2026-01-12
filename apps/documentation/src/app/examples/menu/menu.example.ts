@@ -6,7 +6,7 @@ import { NgpMenu, NgpMenuItem, NgpMenuTrigger } from 'ng-primitives/menu';
   selector: 'app-menu',
   imports: [NgpButton, NgpMenu, NgpMenuTrigger, NgpMenuItem],
   template: `
-    <button [ngpMenuTrigger]="menu" ngpButton>Open Menu</button>
+    <div [ngpMenuTrigger]="menu" ngpButton>Open Menu</div>
 
     <ng-template #menu>
       <div ngpMenu>
