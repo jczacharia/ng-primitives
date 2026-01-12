@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { fireEvent, render } from '@testing-library/angular';
 import { NgpButton } from './button';
+import { provideButtonConfig } from './button-config';
 
 describe('NgpButton', () => {
   it('should set the disabled attribute when disabled', async () => {
@@ -164,5 +165,98 @@ describe('NgpButton', () => {
     const button = container.getByRole('button');
     fireEvent.mouseEnter(button);
     expect(button).not.toHaveAttribute('data-hover');
+  });
+
+  describe('NgpButtonConfig', () => {
+    describe('autoSetRole', () => {
+      it('should default to not set the role attribute', async () => {
+        const container = await render(`<div ngpButton></div>`, {
+          imports: [NgpButton],
+        });
+
+        const button = container.debugElement.queryAll(By.css('div'));
+        expect(button.length).toBe(1);
+        expect(button[0].nativeElement).not.toHaveAttribute('role');
+      });
+
+      it('should set the role attribute to non-native button to button if autoSetRole is true', async () => {
+        const container = await render(`<div ngpButton></div>`, {
+          imports: [NgpButton],
+          providers: [provideButtonConfig({ autoSetRole: true })],
+        });
+
+        expect(container.getByRole('button')).toHaveAttribute('role', 'button');
+      });
+
+      it('should not set the role attribute to button if autoSetRole is true and the element is a native button', async () => {
+        const container = await render(`<button ngpButton></button>`, {
+          imports: [NgpButton],
+          providers: [provideButtonConfig({ autoSetRole: true })],
+        });
+
+        expect(container.getByRole('button')).not.toHaveAttribute('role', 'button');
+      });
+
+      it('should keep the role attribute if it is already set', async () => {
+        const container = await render(`<button role="menuitem" ngpButton></button>`, {
+          imports: [NgpButton],
+          providers: [provideButtonConfig({ autoSetRole: true })],
+        });
+
+        const button = container.debugElement.queryAll(By.css('button'));
+        expect(button.length).toBe(1);
+        expect(button[0].nativeElement).toHaveAttribute('role', 'menuitem');
+      });
+
+      it('should not set the role attribute if is valid link', async () => {
+        const container = await render(`<a href="/" ngpButton></a>`, {
+          imports: [NgpButton],
+          providers: [provideButtonConfig({ autoSetRole: true })],
+        });
+
+        const button = container.debugElement.queryAll(By.css('a'));
+        expect(button.length).toBe(1);
+        expect(button[0].nativeElement).not.toHaveAttribute('role');
+      });
+
+      it('should set the role attribute if is not valid link', async () => {
+        const container = await render(`<a ngpButton></a>`, {
+          imports: [NgpButton],
+          providers: [provideButtonConfig({ autoSetRole: true })],
+        });
+
+        const button = container.debugElement.queryAll(By.css('a'));
+        expect(button.length).toBe(1);
+        expect(button[0].nativeElement).toHaveAttribute('role', 'button');
+      });
+    });
+
+    describe('autoSetType', () => {
+      it('should default to not set the type attribute', async () => {
+        const container = await render(`<button ngpButton></button>`, {
+          imports: [NgpButton],
+        });
+
+        expect(container.getByRole('button')).not.toHaveAttribute('type');
+      });
+    });
+
+    it('should set the type attribute to button if autoSetType is true', async () => {
+      const container = await render(`<button ngpButton></button>`, {
+        imports: [NgpButton],
+        providers: [provideButtonConfig({ autoSetType: true })],
+      });
+
+      expect(container.getByRole('button')).toHaveAttribute('type', 'button');
+    });
+
+    it('should keep the type attribute if it is already set', async () => {
+      const container = await render(`<button type="submit" ngpButton></button>`, {
+        imports: [NgpButton],
+        providers: [provideButtonConfig({ autoSetType: true })],
+      });
+
+      expect(container.getByRole('button')).toHaveAttribute('type', 'submit');
+    });
   });
 });
