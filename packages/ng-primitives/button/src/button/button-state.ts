@@ -1,4 +1,4 @@
-import { isSignal, linkedSignal, signal, Signal } from '@angular/core';
+import { isSignal, signal, Signal } from '@angular/core';
 import { ngpInteractions } from 'ng-primitives/interactions';
 import { injectElementRef } from 'ng-primitives/internal';
 import { attrBinding, controlled, createPrimitive, dataBinding } from 'ng-primitives/state';
