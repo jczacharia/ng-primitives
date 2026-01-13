@@ -208,6 +208,17 @@ describe('NgpButton', () => {
         expect(button[0].nativeElement).toHaveAttribute('role', 'menuitem');
       });
 
+      it('should keep the role attribute if it is already set empty string', async () => {
+        const container = await render(`<button role ngpButton></button>`, {
+          imports: [NgpButton],
+          providers: [provideButtonConfig({ autoSetRole: true })],
+        });
+
+        const button = container.debugElement.queryAll(By.css('button'));
+        expect(button.length).toBe(1);
+        expect(button[0].nativeElement).toHaveAttribute('role', '');
+      });
+
       it('should not set the role attribute if is valid link', async () => {
         const container = await render(`<a href="/" ngpButton></a>`, {
           imports: [NgpButton],
@@ -239,24 +250,35 @@ describe('NgpButton', () => {
 
         expect(container.getByRole('button')).not.toHaveAttribute('type');
       });
-    });
 
-    it('should set the type attribute to button if autoSetType is true', async () => {
-      const container = await render(`<button ngpButton></button>`, {
-        imports: [NgpButton],
-        providers: [provideButtonConfig({ autoSetType: true })],
+      it('should set the type attribute to button if native button and autoSetType is true', async () => {
+        const container = await render(`<button ngpButton></button>`, {
+          imports: [NgpButton],
+          providers: [provideButtonConfig({ autoSetType: true })],
+        });
+
+        expect(container.getByRole('button')).toHaveAttribute('type', 'button');
       });
 
-      expect(container.getByRole('button')).toHaveAttribute('type', 'button');
-    });
+      it('should not set the type attribute if not native button and autoSetType is true', async () => {
+        const container = await render(`<div ngpButton></div>`, {
+          imports: [NgpButton],
+          providers: [provideButtonConfig({ autoSetType: true })],
+        });
 
-    it('should keep the type attribute if it is already set', async () => {
-      const container = await render(`<button type="submit" ngpButton></button>`, {
-        imports: [NgpButton],
-        providers: [provideButtonConfig({ autoSetType: true })],
+        const button = container.debugElement.queryAll(By.css('div'));
+        expect(button.length).toBe(1);
+        expect(button[0].nativeElement).not.toHaveAttribute('type');
       });
 
-      expect(container.getByRole('button')).toHaveAttribute('type', 'submit');
+      it('should keep the type attribute if it is already set', async () => {
+        const container = await render(`<button type="submit" ngpButton></button>`, {
+          imports: [NgpButton],
+          providers: [provideButtonConfig({ autoSetType: true })],
+        });
+
+        expect(container.getByRole('button')).toHaveAttribute('type', 'submit');
+      });
     });
   });
 });
